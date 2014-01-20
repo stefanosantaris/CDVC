@@ -1,0 +1,18 @@
+package edu.csd;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.microsoft.windowsazure.services.queue.client.CloudQueue;
+
+public class DatasetUpdater {
+	public static final String storageConnectionString = "UseDevelopmentStorage=true";
+	private final static String insertionQueue = "insertionqueue";
+	private static List<Integer> insertionIdsList = new ArrayList<>();
+	private static String datasetName;
+	private static CloudQueue queue;
+
+	public static void main(String[] args) {
+
+	}
+}

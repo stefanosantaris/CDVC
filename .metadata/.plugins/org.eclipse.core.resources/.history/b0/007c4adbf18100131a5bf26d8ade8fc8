@@ -1,0 +1,13 @@
+package edu.csd;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatasetUpdater {
+	public static final String storageConnectionString = "UseDevelopmentStorage=true";
+	private final static String insertionQueue = "insertionqueue";
+	private static List<Integer> insertionIdsList = new ArrayList<>();
+	public static void main(String[] args) {
+
+	}
+}

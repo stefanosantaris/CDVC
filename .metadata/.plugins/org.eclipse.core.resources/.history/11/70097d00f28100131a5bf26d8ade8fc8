@@ -1,0 +1,51 @@
+package edu.csd;
+
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.microsoft.windowsazure.services.core.storage.CloudStorageAccount;
+import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.windowsazure.services.queue.client.CloudQueue;
+import com.microsoft.windowsazure.services.queue.client.CloudQueueClient;
+
+public class DatasetUpdater {
+	public static final String storageConnectionString = "UseDevelopmentStorage=true";
+	private final static String insertionQueue = "insertionqueue";
+	private static List<Integer> insertionIdsList = new ArrayList<>();
+	private static String datasetName;
+	private static CloudQueue queue;
+
+	public static void main(String[] args) {
+		initialize();
+		while(true) {
+			
+		}
+	}
+	
+	private static void initialize() {
+		// Retrieve storage account from connection-string
+		CloudStorageAccount storageAccount;
+		try {
+			storageAccount = CloudStorageAccount.parse(storageConnectionString);
+			// Create the queue client
+			CloudQueueClient queueClient = storageAccount
+					.createCloudQueueClient();
+
+			// Retrieve a reference to a queue
+			queue = queueClient.getQueueReference(insertionQueue);
+
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+}

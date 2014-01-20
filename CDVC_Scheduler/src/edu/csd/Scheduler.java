@@ -34,8 +34,10 @@ public class Scheduler {
 
 	private final static String schedulerQueue = "schedulerqueue";
 	private final static String dvcExtractorQueue = "dvcextractorqueue";
+	private final static String insertionQueue = "insertionqueue";
 	private final static String priorityIndexerQueue = "priorityindexqueue";
 	private final static String filesBlobName = "datasetcontainer";
+	private static List<Integer> insertionIdsList = new ArrayList<>();
 
 	
 	private static int D, N;
@@ -63,6 +65,9 @@ public class Scheduler {
 					if (functionality == 1) {
 						// Initialize the preprocessing step.
 						intializePreprocessing(fileName);
+					} else if (functionality == 2) {
+						// Initialize the insertion step.
+						initializeInsertion(fileName);
 					}
 				}
 			} catch (StorageException e) {
@@ -72,13 +77,66 @@ public class Scheduler {
 		}
 	}
 
+	private static void initializeInsertion(String fileName) {
+		//download the file with the images descriptor vector
+		downloadFile(fileName);
+		
+		// read the file and store the descriptor vector to the azure table
+		assignVectorsToTable(fileName, false);
+		
+		//send message to the Dataset Updater component
+		sendMessageToInsertionComponent(fileName);
+		
+	}
+
+
+
+	private static void sendMessageToInsertionComponent(String fileName) {
+		String json = JSONValue.toJSONString(insertionIdsList);
+		
+		try {
+			//Retrieve storage account from connection-string 
+			//(The storage connection string needs to be changed in case of cloud infrastructure
+			//is used instead of emulator)
+			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
+			
+			// Create the queue client
+			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+		
+			// Retrieve a reference to a queue
+			CloudQueue queue = queueClient.getQueueReference(insertionQueue);
+
+			// Create the queue if it doesn't already exist
+			queue.createIfNotExist();
+			
+			//Create the json object with the appropriate variables
+			JSONObject obj = new JSONObject();
+			obj.put("dataset", datasetName);
+			obj.put("idlist", json);
+			
+			//Send the Message
+			CloudQueueMessage message = new CloudQueueMessage(obj.toJSONString());
+			queue.addMessage(message);
+			
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private static void intializePreprocessing(String fileName) {
 
 		// download dataset file
 		downloadFile(fileName);
 
 		// read the file and store the descriptor vectors to the azure table
-		assignVectorsToTable(fileName);
+		assignVectorsToTable(fileName, true);
 		
 		// send messages and start the preprocessing step
 		startPreprocessing();
@@ -178,7 +236,7 @@ public class Scheduler {
 		
 	}
 
-	private static void assignVectorsToTable(String fileName) {
+	private static void assignVectorsToTable(String fileName, boolean preprocessingFlag) {
 		//Retrieve the datasets name
 		String[] splitFileName = fileName.split(".");
 		datasetName = splitFileName[0];
@@ -195,7 +253,15 @@ public class Scheduler {
 			D = splitLine.length;
 			
 			List<DescriptorVectorEntity> entityList = new ArrayList<>();
-			int id = 1;
+			
+			int id;
+			if(preprocessingFlag) {
+				id = 1;
+			} else {
+				id = N + 1;
+				insertionIdsList.add(id);
+			}
+			
 			DescriptorVectorEntity entity = new DescriptorVectorEntity(
 					datasetName, id, strLine);
 			//The entity is inserted into the entityList in order to execute a batch insertion to the azure tables
@@ -216,7 +282,7 @@ public class Scheduler {
 				storeEntities(datasetName, entityList);
 			}
 			
-			N = id - 1;
+			N = id;
 			br.close();
 
 		} catch (FileNotFoundException e) {

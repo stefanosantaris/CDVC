@@ -82,6 +82,8 @@ public class GlobalImageSorter {
 						}
 					}
 
+					retrieveThePriorityIndexer();
+					
 					sortImages();
 
 					storeTheUpdatedPositionList();
