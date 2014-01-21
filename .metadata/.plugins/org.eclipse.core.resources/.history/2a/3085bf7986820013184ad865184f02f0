@@ -1,0 +1,14 @@
+package edu.csd;
+
+public class CandidateIdsRetrieval {
+	
+	public static final String storageConnectionString = "UseDevelopmentStorage=true";
+	private final static String insertionQueue = "insertionqueue";
+	private final static String candidateImageIDRetrievalQueue = "candidateidretrievalqueue";
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

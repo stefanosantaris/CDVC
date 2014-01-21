@@ -1,0 +1,19 @@
+package edu.csd;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class CandidateIdsRetrieval {
+	
+	public static final String storageConnectionString = "UseDevelopmentStorage=true";
+	private final static String candidateImageIDRetrievalQueue = "candidateidretrievalqueue";
+	private final static String imageComparatorQueue = "imagecomparatorqueue";
+	private static List<Integer> positionsList = new ArrayList<>();
+	private static String datasetName;
+	private static Double W;
+	private static int N;
+	public static void main(String[] args) {
+		
+	}
+
+}

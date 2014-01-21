@@ -1,8 +1,0 @@
-package edu.csd;
-
-public class DatasetUpdater {
-	public static final String storageConnectionString = "UseDevelopmentStorage=true";
-	public static void main(String[] args) {
-
-	}
-}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableQuery"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableConstants"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableQuery.QueryComparisons"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableQuery.Operators"/>
+<fullyQualifiedTypeName name="edu.csd.PositionListEntity"/>
+<fullyQualifiedTypeName name="edu.csd.GlobalDescriptorVectorEntity"/>
+<fullyQualifiedTypeName name="edu.csd.DescriptorVectorEntity"/>
+<fullyQualifiedTypeName name="javax.swing.plaf.SliderUI"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="java.util.PriorityQueue"/>
+<fullyQualifiedTypeName name="java.util.Comparator"/>
+<fullyQualifiedTypeName name="edu.csd.ResultEntity"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableServiceEntity"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="edu.csd.RSetEntity"/>
+<fullyQualifiedTypeName name="org.json.simple.JSONValue"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.core.storage.CloudStorageAccount"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.CloudTableClient"/>
+<fullyQualifiedTypeName name="com.microsoft.windowsazure.services.table.client.TableOperation"/>
+</qualifiedTypeNameHistroy>

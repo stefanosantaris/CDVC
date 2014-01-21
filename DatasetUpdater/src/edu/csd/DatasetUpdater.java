@@ -22,13 +22,19 @@ import com.microsoft.windowsazure.services.table.client.TableQuery.Operators;
 import com.microsoft.windowsazure.services.table.client.TableQuery.QueryComparisons;
 
 public class DatasetUpdater {
+	
+	
 	public static final String storageConnectionString = "UseDevelopmentStorage=true";
 	private final static String insertionQueue = "insertionqueue";
+	private final static String candidateImageIDRetrievalQueue = "candidateidretrievalqueue";
 	private static List<Integer> insertionIdsList = new ArrayList<>();
 	private static List<Integer> positionsList = new ArrayList<>();
 	private static List<Integer> updatedPositionsList = new ArrayList<>();
 	private static String datasetName;
 	private static List<PriorityIndexValue> priorityIndex;
+	private static String query;
+	private static Double W;
+	private static int N;
 
 	private final static String priorityIndexTable = "priorityindex";
 	private static CloudQueue queue;
@@ -49,7 +55,10 @@ public class DatasetUpdater {
 					JSONObject jsonObject = (JSONObject) obj;
 					datasetName = (String) jsonObject.get("dataset");
 					String jsonIdList = (String) jsonObject.get("idlist");
-
+					query = (String) jsonObject.get("query");
+					N = (Integer) jsonObject.get("numOfImages");
+					W = (Double) jsonObject.get("W");
+					
 					obj = JSONValue.parse(jsonIdList);
 					JSONArray array = (JSONArray) obj;
 					for (int i = 0; i < array.size(); i++) {
@@ -61,12 +70,60 @@ public class DatasetUpdater {
 					retrieveTheDescriptorVectorsPositions();
 
 					insertImageDescriptorVector();
+					
 
 				}
 			} catch (StorageException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private static void sendMessageToQueryProcessingStep(int id, int position) {
+		try {
+			// Retrieve storage account from connection-string
+			// (The storage connection string needs to be changed in case of
+			// cloud infrastructure
+			// is used instead of emulator)
+			CloudStorageAccount storageAccount = CloudStorageAccount
+					.parse(storageConnectionString);
+
+			// Create the queue client
+			CloudQueueClient queueClient = storageAccount
+					.createCloudQueueClient();
+
+			// Retrieve a reference to a queue
+			CloudQueue queue = queueClient
+					.getQueueReference(candidateImageIDRetrievalQueue);
+
+			// Create the queue if it doesn't already exist
+			queue.createIfNotExist();
+
+			
+			JSONObject obj = new JSONObject();
+			obj.put("dataset", datasetName);
+			obj.put("numOfImages", new Integer(N));
+			obj.put("descriptorId", new Integer(id));
+			obj.put("W", new Double(W));
+			obj.put("position", new Integer(position));
+			
+			// Convert the list with the cardinality values to json string
+			String jsonString = obj.toJSONString();
+
+			// Send the Message
+			CloudQueueMessage message = new CloudQueueMessage(jsonString);
+			queue.addMessage(message);
+
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -98,7 +155,6 @@ public class DatasetUpdater {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	private static void insertImageDescriptorVector() {
@@ -124,11 +180,13 @@ public class DatasetUpdater {
 
 			// Update the position list according to the comparison result
 			int result = compareImages(candidateEntities.get(imageId), entity);
+			int position;
 			if (result > 0) {
 				for (int j = 0; j < (max - 1); j++) {
 					updatedPositionsList.add(positionsList.get(j));
 				}
 				updatedPositionsList.add(entity.getId());
+				position = updatedPositionsList.size() - 1;
 				updatedPositionsList.add(positionsList.get(max));
 				for (int j = (max + 1); j < positionsList.size(); j++) {
 					updatedPositionsList.add(positionsList.get(j));
@@ -138,6 +196,7 @@ public class DatasetUpdater {
 					updatedPositionsList.add(positionsList.get(j));
 				}
 				updatedPositionsList.add(entity.getId());
+				position = updatedPositionsList.size() - 1;
 				for (int j = (max + 1); j < positionsList.size(); j++) {
 					updatedPositionsList.add(positionsList.get(j));
 				}
@@ -146,6 +205,10 @@ public class DatasetUpdater {
 			storeTheUpdatedPositionList();
 
 			indexTheInsertedImage(entity);
+			
+			if(query.equals("y")) {
+				sendMessageToQueryProcessingStep(entity.getId(), position);
+			}
 		}
 	}
 

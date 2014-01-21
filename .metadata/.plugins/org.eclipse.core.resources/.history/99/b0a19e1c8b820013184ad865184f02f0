@@ -1,0 +1,44 @@
+package edu.csd;
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
+
+public class DistanceCollector {
+
+	public static void main(String[] args) {
+		initialize();
+
+		while (true) {
+			try {
+				CloudQueueMessage message = queue.retrieveMessage();
+				if (message != null) {
+					queue.deleteMessage(message);
+					String json = message.getMessageContentAsString();
+
+					// parse json string
+					Object obj = JSONValue.parse(json);
+					JSONObject jsonObject = (JSONObject) obj;
+					datasetName = (String) jsonObject.get("dataset");
+					int descriptorId = (int) jsonObject.get("descriptorId");
+					int candidateId = (int) jsonObject.get("candidateId");
+					W = (Double) jsonObject.get("W");
+					
+					DescriptorVectorEntity queryEntity = retrieveEntity(descriptorId);
+					DescriptorVectorEntity candidateEntity = retrieveEntity(candidateId);
+					double result = compareImages(queryEntity, candidateEntity);
+					
+					
+					sendMessageToDistanceCollector(result, candidateId);
+				}
+			} catch (StorageException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,6 @@
+package edu.csd;
+
+public class RSetEntity {
+	private String datasetName;
+	private String R;
+}

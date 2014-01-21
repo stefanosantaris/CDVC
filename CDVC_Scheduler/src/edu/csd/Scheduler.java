@@ -31,6 +31,7 @@ public class Scheduler {
 	public static final String storageConnectionString = "UseDevelopmentStorage=true";
 
 	private final static int numberOfDVCExtractorNodes = 2;
+	private final static double W = 0.0025;
 
 	private final static String schedulerQueue = "schedulerqueue";
 	private final static String dvcExtractorQueue = "dvcextractorqueue";
@@ -67,7 +68,9 @@ public class Scheduler {
 						intializePreprocessing(fileName);
 					} else if (functionality == 2) {
 						// Initialize the insertion step.
-						initializeInsertion(fileName);
+						initializeInsertion(fileName, "n");
+					} else if(functionality == 3) {
+						initializeInsertion(fileName, "y");
 					}
 				}
 			} catch (StorageException e) {
@@ -77,7 +80,7 @@ public class Scheduler {
 		}
 	}
 
-	private static void initializeInsertion(String fileName) {
+	private static void initializeInsertion(String fileName, String query) {
 		//download the file with the images descriptor vector
 		downloadFile(fileName);
 		
@@ -85,13 +88,13 @@ public class Scheduler {
 		assignVectorsToTable(fileName, false);
 		
 		//send message to the Dataset Updater component
-		sendMessageToInsertionComponent(fileName);
+		sendMessageToInsertionComponent(fileName, query);
 		
 	}
 
 
 
-	private static void sendMessageToInsertionComponent(String fileName) {
+	private static void sendMessageToInsertionComponent(String fileName, String query) {
 		String json = JSONValue.toJSONString(insertionIdsList);
 		
 		try {
@@ -113,6 +116,9 @@ public class Scheduler {
 			JSONObject obj = new JSONObject();
 			obj.put("dataset", datasetName);
 			obj.put("idlist", json);
+			obj.put("query", query);
+			obj.put("numOfImages", new Integer(N));
+			obj.put("W", new Double(W));
 			
 			//Send the Message
 			CloudQueueMessage message = new CloudQueueMessage(obj.toJSONString());
