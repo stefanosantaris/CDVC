@@ -26,16 +26,7 @@ In our repository, we provide the source code of the proposed CDVC framework. In
 4) modify the numberOfDVCExtractorNodes variable in the CDVC_Scheduler component according to the deployed instances of the DVC Extractor worker instances; 
 5) modify the numberOfImageSorterNodes variable in the PriorityIndexer component according to the deployed instances of the Image Sorter worker instances.
 
-We provide in our repository a CDVC_Initializer project which is the user interface of our framework. CDVC_Initializer should not deployed to the cloud but it should include the Windows Azure libraries, since it interacts with the Windows Azure blob storage and queue service. Since the framework's components is deployed to the cloud, you need to execute the CDVC_Initializer to run our experiments.r component according to the
-deployed instances of the DVC Exctractor worker roles instances. 
-5) modify the number of numberOfImageSorterNodes variable in PriorityIndexer component according to the
-deployed instances of the Image Sorter worker roles instances.
-
-We provide in our repository a CDVC_Initializer project which constitutes the user interface of our 
-framework. CDVC_Initializer should not deployed to the cloud but it should include the windows azure
-libraries since it interacts with the windows azure blob storage and queue service. Since the framework's 
-components have been deployed to the cloud, you need to execute the CDVC_Initializer to execute our
-experiments. 
+We provide in our repository a CDVC_Initializer project which is the user interface of our framework. CDVC_Initializer should not deployed to the cloud but it should include the Windows Azure libraries, since it interacts with the Windows Azure blob storage and queue service. Since the framework's components are deployed to the cloud, you need to execute the CDVC_Initializer to run our experiments.
 
 
 
